@@ -59,12 +59,6 @@
 #include <linux/sti/abc_common.h>
 #endif
 
-#ifdef CONFIG_MMC_SUPPORT_STLOG
-#include <linux/fslog.h>
-#else
-#define ST_LOG(fmt,...)
-#endif
-
 MODULE_ALIAS("mmc:block");
 #ifdef MODULE_PARAM_PREFIX
 #undef MODULE_PARAM_PREFIX
