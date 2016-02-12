@@ -1387,8 +1387,7 @@ int parse_events_terms(struct list_head *terms, const char *str)
 		return 0;
 	}
 
-	if (data.terms)
-		parse_events__free_terms(data.terms);
+	parse_events_terms__delete(data.terms);
 	return ret;
 }
 
@@ -2079,8 +2078,10 @@ void parse_events_terms__purge(struct list_head *terms)
 	}
 }
 
-void parse_events__free_terms(struct list_head *terms)
+void parse_events_terms__delete(struct list_head *terms)
 {
+	if (!terms)
+		return;
 	parse_events_terms__purge(terms);
 	free(terms);
 }
