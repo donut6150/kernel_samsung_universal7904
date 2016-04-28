@@ -576,6 +576,8 @@ perf_evsel__config_callgraph(struct perf_evsel *evsel,
 
 	perf_evsel__set_sample_bit(evsel, CALLCHAIN);
 
+	attr->sample_max_stack = param->max_stack;
+
 	if (param->record_mode == CALLCHAIN_LBR) {
 		if (!opts->branch_stack) {
 			if (attr->exclude_user) {
@@ -640,7 +642,8 @@ static void apply_config_terms(struct perf_evsel *evsel,
 		.record_mode = callchain_param.record_mode,
 	};
 	u32 dump_size = 0;
-	char *callgraph_buf = NULL;
+	int max_stack = 0;
+	const char *callgraph_buf = NULL;
 
 	list_for_each_entry(term, config_terms, list) {
 		switch (term->type) {
@@ -664,6 +667,9 @@ static void apply_config_terms(struct perf_evsel *evsel,
 		case PERF_EVSEL__CONFIG_TERM_STACK_USER:
 			dump_size = term->val.stack_user;
 			break;
+		case PERF_EVSEL__CONFIG_TERM_MAX_STACK:
+			max_stack = term->val.max_stack;
+			break;
 		case PERF_EVSEL__CONFIG_TERM_INHERIT:
 			/*
 			 * attr->inherit should has already been set by
@@ -679,7 +685,12 @@ static void apply_config_terms(struct perf_evsel *evsel,
 	}
 
 	/* User explicitly set per-event callgraph, clear the old setting and reset. */
-	if ((callgraph_buf != NULL) || (dump_size > 0)) {
+	if ((callgraph_buf != NULL) || (dump_size > 0) || max_stack) {
+		if (max_stack) {
+			param.max_stack = max_stack;
+			if (callgraph_buf == NULL)
+				callgraph_buf = "fp";
+		}
 
 		/* parse callgraph parameters */
 		if (callgraph_buf != NULL) {
@@ -1290,6 +1301,7 @@ int perf_event_attr__fprintf(FILE *fp, struct perf_event_attr *attr,
 	PRINT_ATTRf(clockid, p_signed);
 	PRINT_ATTRf(sample_regs_intr, p_hex);
 	PRINT_ATTRf(aux_watermark, p_unsigned);
+	PRINT_ATTRf(sample_max_stack, p_unsigned);
 
 	return ret;
 }
