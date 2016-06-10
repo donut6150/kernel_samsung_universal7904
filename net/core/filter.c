@@ -1275,7 +1275,7 @@ struct bpf_prog *__get_filter(struct sock_fprog *fprog, struct sock *sk)
  */
 int sk_attach_filter(struct sock_fprog *fprog, struct sock *sk)
 {
-	struct bpf_prog *prog;
+	struct bpf_prog *prog = __get_filter(fprog, sk);
 	int err;
 
 	if (IS_ERR(prog))
