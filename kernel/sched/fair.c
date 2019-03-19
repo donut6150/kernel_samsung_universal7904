@@ -6783,12 +6783,12 @@ static int hmp_is_family_in_fastest_domain(struct task_struct *p)
 {
 	struct task_struct *thread_p;
 
-	list_for_each_entry(thread_p, &p->thread_group, thread_group) {
-		struct sched_entity *thread_se = &thread_p->se;
-		if (thread_se->avg.hmp_load_avg >= hmp_down_threshold &&
-				hmp_cpu_is_fastest(task_cpu(thread_p))) {
-			return thread_p->pid;
-		}
+	WRITE_ONCE(cfs_rq->h_load_next, NULL);
+	for_each_sched_entity(se) {
+		cfs_rq = cfs_rq_of(se);
+		WRITE_ONCE(cfs_rq->h_load_next, se);
+		if (cfs_rq->last_h_load_update == now)
+			break;
 	}
 	return 0;
 }
@@ -6800,10 +6800,15 @@ static inline unsigned int hmp_best_little_cpu(struct task_struct *tsk,
 	struct hmp_domain *hmp;
 	struct cpumask allowed_hmp_cpus;
 
-	if (hmp_cpu_is_slowest(cpu))
-		hmp = hmp_cpu_domain(cpu);
-	else
-		hmp = hmp_slower_domain(cpu);
+	while ((se = READ_ONCE(cfs_rq->h_load_next)) != NULL) {
+		load = cfs_rq->h_load;
+		load = div64_ul(load * se->avg.load_avg,
+			cfs_rq_load_avg(cfs_rq) + 1);
+		cfs_rq = group_cfs_rq(se);
+		cfs_rq->h_load = load;
+		cfs_rq->last_h_load_update = now;
+	}
+}
 
 #ifdef CONFIG_SCHED_SKIP_CORE_SELECTION_MASK
 	cpumask_xor(&allowed_hmp_cpus, &hmp->cpus,
