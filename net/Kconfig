@@ -403,9 +403,6 @@ endif   # if NET
 config HAVE_BPF_JIT
 	bool
 
-config HAVE_EBPF_JIT
-	bool
-
 # Cross Layer TCP
 config CLTCP
 	bool "Cross Layer TCP"
