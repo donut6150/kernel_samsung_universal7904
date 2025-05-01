@@ -1246,6 +1246,9 @@ static inline void sysreg_write_mask(u32 id, u32 reg_id, u32 val, u32 mask)
 int decon_enable(struct decon_device *decon);
 int decon_disable(struct decon_device *decon);
 
+/* turn on display if AOD always on */
+int s6e8fc1_dozedisplayon();
+
 /* common function API */
 bool decon_validate_x_alignment(struct decon_device *decon, int x, u32 w,
 		u32 bits_per_pixel);
