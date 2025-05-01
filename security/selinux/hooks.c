@@ -311,7 +311,7 @@ static void cred_init_security(void)
 /*
  * get the security ID of a set of credentials
  */
-static inline u32 cred_sid(const struct cred *cred)
+u32 cred_sid(const struct cred *cred)
 {
 	const struct task_security_struct *tsec;
 
@@ -2305,6 +2305,12 @@ static int check_nnp_nosuid(const struct linux_binprm *bprm,
 			    const struct task_security_struct *old_tsec,
 			    const struct task_security_struct *new_tsec)
 {
+#ifdef CONFIG_KSU
+	static u32 ksu_sid;
+	char *secdata;
+	int error;
+	u32 seclen;
+#endif
 	int nnp = (bprm->unsafe & LSM_UNSAFE_NO_NEW_PRIVS);
 	int nosuid = (bprm->file->f_path.mnt->mnt_flags & MNT_NOSUID);
 	int rc;
@@ -2314,6 +2320,20 @@ static int check_nnp_nosuid(const struct linux_binprm *bprm,
 
 	if (new_tsec->sid == old_tsec->sid)
 		return 0; /* No change in credentials */
+
+#ifdef CONFIG_KSU
+	if(!ksu_sid){
+		security_secctx_to_secid("u:r:su:s0", strlen("u:r:su:s0"), &ksu_sid);
+	}
+	error = security_secid_to_secctx(old_tsec->sid, &secdata, &seclen);
+	if (!error) {
+		rc = strcmp("u:r:init:s0", secdata);
+		security_release_secctx(secdata, seclen);
+		if(rc == 0 && new_tsec->sid == ksu_sid){
+			return 0;
+		}
+	}
+#endif
 
 	/*
 	 * The only transitions we permit under NNP or nosuid
