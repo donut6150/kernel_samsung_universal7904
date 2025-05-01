@@ -1170,8 +1170,8 @@ usi_mode = "hsi2c0" or "hsi2c1" or "spi" or "uart"
 		zinitix,page_size = <128>;
 		zinitix,chip_name = "ZT7548";
 		zinitix,firmware_name = "tsp_zinitix/zt7548_a20.fw";
-		/* zinitix,spay = "true"; */
-		/* zinitix,aod = "true"; */
+		zinitix,spay = "true";
+		zinitix,aod = "true";
 		zinitix,tclm_level = <0x01>;
 		zinitix,afe_base = <0x0000>;
 		zinitix,mis_cal_check;
@@ -1190,6 +1190,9 @@ usi_mode = "hsi2c0" or "hsi2c1" or "spi" or "uart"
 		imagis,octa-hw = <1>;
 		imagis,ic-version = "ist40xx";
 		imagis,project-name = "a30s";
+		zinitix,spay = "true";
+		zinitix,aod = "true";
+		zinitix,aot = "true";
 		imagis,tclm_level = <2>;
 		imagis,afe_base = <0x0107>;
 		enable_settings_aot;
