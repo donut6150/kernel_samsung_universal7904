@@ -579,6 +579,12 @@ config BATTERY_SAVER
 
 	  If in doubt, say Y.
 
+config USB_FAST_CHARGE
+	bool "Force faster charge rate via USB"
+	default n
+	help
+	  Override the default charging speed via USB to 3000 mA
+
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"
