@@ -35,7 +35,7 @@
 #define DPUI_MODEL_NAME		"AMS638TH07"
 #endif
 
-#define PANEL_STATE_SUSPENED	0
+#define PANEL_STATE_SUSPENDED	0
 #define PANEL_STATE_RESUMED	1
 
 #define LEVEL_IS_HBM(brightness)		(brightness > UI_MAX_BRIGHTNESS)
@@ -197,7 +197,7 @@ exit:
 	return ret;
 }
 
-#if defined(CONFIG_EXYNOS_DECON_MDNIE)
+#if defined(CONFIG_EXYNOS_DECON_MDNIE) || defined(CONFIG_EXYNOS_DOZE)
 static int dsim_write_set(struct lcd_info *lcd, struct lcd_seq_info *seq, u32 num)
 {
 	int ret = 0, i;
@@ -652,7 +652,7 @@ static int s6e8fc1_exit(struct lcd_info *lcd)
 {
 	int ret = 0;
 
-	dev_info(&lcd->ld->dev, "%s\n", __func__);
+	dev_info(&lcd->ld->dev, "%s called\n", __func__);
 
 	s6e8fc1_read_rddpm(lcd);
 	s6e8fc1_read_rddsm(lcd);
@@ -684,6 +684,7 @@ static int s6e8fc1_displayon(struct lcd_info *lcd)
 {
 	int ret = 0;
 
+	dev_info(&lcd->ld->dev, "%s: called, is your display on?\n", __func__);
 	dev_info(&lcd->ld->dev, "%s\n", __func__);
 
 	/* 10. Wait 100ms */
@@ -693,6 +694,14 @@ static int s6e8fc1_displayon(struct lcd_info *lcd)
 	DSI_WRITE(SEQ_DISPLAY_ON, ARRAY_SIZE(SEQ_DISPLAY_ON));
 
 	return ret;
+}
+
+int s6e8fc1_dozedisplayon()
+{
+	struct decon_device *decon = get_decon_drvdata(0);
+	struct dsim_device *dsim = container_of(decon->out_sd[0], struct dsim_device, sd);
+	struct lcd_info *lcd = dsim->priv.par;
+	return s6e8fc1_displayon(lcd);
 }
 
 static int s6e8fc1_init(struct lcd_info *lcd)
@@ -1443,15 +1452,17 @@ static int dsim_panel_displayon(struct dsim_device *dsim)
 
 	dev_info(&lcd->ld->dev, "+ %s: %d\n", __func__, lcd->state);
 
-	if (lcd->state == PANEL_STATE_SUSPENED) {
+	if (lcd->state == PANEL_STATE_SUSPENDED) {
 		s6e8fc1_init(lcd);
 
 		mutex_lock(&lcd->lock);
 		lcd->state = PANEL_STATE_RESUMED;
 		mutex_unlock(&lcd->lock);
+		dev_info(&lcd->ld->dev, "%s: lcd->state is %d -> PANEL_STATE_RESUMED\n", __func__, lcd->state);
 	}
 
-	dev_info(&lcd->ld->dev, "- %s: %d, %d\n", __func__, lcd->state, lcd->connected);
+	dev_info(&lcd->ld->dev, "%s: s6e8fc1_displayon was called, is your display on?\n", __func__);	
+	dev_info(&lcd->ld->dev, "- %s: lcd->state is %d, lcd->connected is %d\n", __func__, lcd->state, lcd->connected);
 
 	return 0;
 }
@@ -1460,19 +1471,22 @@ static int dsim_panel_suspend(struct dsim_device *dsim)
 {
 	struct lcd_info *lcd = dsim->priv.par;
 
-	dev_info(&lcd->ld->dev, "+ %s: %d\n", __func__, lcd->state);
+	dev_info(&lcd->ld->dev, "+ %s called: lcd->state is %d\n", __func__, lcd->state);
 
-	if (lcd->state == PANEL_STATE_SUSPENED)
+	if (lcd->state == PANEL_STATE_SUSPENDED) {
+		dev_info(&lcd->ld->dev, "%s: panel state is %d, already suspended!\n", __func__, lcd->state);
 		goto exit;
+	}
 
 	s6e8fc1_exit(lcd);
 
 	mutex_lock(&lcd->lock);
-	lcd->state = PANEL_STATE_SUSPENED;
+	lcd->state = PANEL_STATE_SUSPENDED;
 	mutex_unlock(&lcd->lock);
 
+	dev_info(&lcd->ld->dev, "%s: lcd->state is %d\n", __func__, lcd->state);
 	dev_info(&lcd->ld->dev, "- %s: %d, %d\n", __func__, lcd->state, lcd->connected);
-
+	
 exit:
 	return 0;
 }
@@ -1507,7 +1521,7 @@ static int dsim_panel_mask_brightness(struct dsim_device *dsim)
 
 	dev_info(&lcd->ld->dev, "+ %s: %d\n", __func__, lcd->state);
 
-	if (lcd->state == PANEL_STATE_SUSPENED)
+	if (lcd->state == PANEL_STATE_SUSPENDED)
 		return -EINVAL;
 
 	if (regs->mask_layer == true && decon->current_mask_layer == false) {
