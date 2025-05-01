@@ -148,9 +148,11 @@ enum {
 /* operation state of dsim driver */
 enum dsim_state {
 	DSIM_STATE_INIT,
-	DSIM_STATE_ON,		/* HS clock was enabled. */
-	DSIM_STATE_ULPS,	/* DSIM was entered ULPS state */
-	DSIM_STATE_OFF		/* DSIM is suspend state */
+	DSIM_STATE_ON,			/* HS clock was enabled. */
+	DSIM_STATE_DOZE,		/* HS clock was enabled. */
+	DSIM_STATE_ULPS,		/* DSIM was entered ULPS state */
+	DSIM_STATE_DOZE_SUSPEND,	/* DSIM is suspend state */
+	DSIM_STATE_OFF			/* DSIM is suspend state */
 };
 
 #if defined(CONFIG_SOC_EXYNOS8895)
