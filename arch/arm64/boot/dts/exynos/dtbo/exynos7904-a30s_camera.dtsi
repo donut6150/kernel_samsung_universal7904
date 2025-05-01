@@ -188,7 +188,7 @@
 			core_voltage = <0>;    /* 0 : N , 1 : Y  */
 			upgrade = <0>;         /* 0 : N , 1 : SYSFS , 2 : CAMON */
 			companion = <0>;       /* 0 : N , 1 : Y  */
-			ois = <0>;             /* 0 : N , 1 : Y  */
+			ois = <1>;             /* 0 : N , 1 : Y  */
 			valid = <1>;           /* 0 : INVALID, 1 : VALID */
 			dual_open = <0>;       /* 0 : SINGLE_OPEN , 1 : DUAL_OPEN */
 			position = <0>;        /* 0 : Rear, 1:Front, 2:Rear2, 3:Front2, 4:Rear3 */
@@ -224,7 +224,7 @@
 			core_voltage = <0>;    /* 0 : N , 1 : Y  */
 			upgrade = <0>;         /* 0 : N , 1 : SYSFS , 2 : CAMON */
 			companion = <0>;       /* 0 : N , 1 : Y  */
-			ois = <0>;             /* 0 : N , 1 : Y  */
+			ois = <1>;             /* 0 : N , 1 : Y  */
 			valid = <1>;           /* 0 : INVALID, 1 : VALID */
 			dual_open = <0>;       /* 0 : SINGLE_OPEN , 1 : DUAL_OPEN */
 			position = <4>;        /* 0 : Rear, 1:Front, 2:Rear2, 3:Front2, 4:Rear3 */
