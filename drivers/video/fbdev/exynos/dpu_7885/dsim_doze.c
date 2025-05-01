@@ -85,10 +85,14 @@ exit:
 
 int dsim_doze_suspend(struct dsim_device *dsim)
 {
-	if (dsim->state == DSIM_STATE_OFF)
-		goto exit;
+	dsim_info("%s called", __func__);
 
-	dsim_info("+ %s: %d, %d\n", __func__, dsim->state, dsim->doze_state);
+	if (dsim->state == DSIM_STATE_OFF) {
+		dsim_info("%s: dsim->state is %d", __func__, dsim->state);
+		goto exit;
+	}
+
+	dsim_info("+ %s: dsim->state is %d, dsim->doze_state is %d\n", __func__, dsim->state, dsim->doze_state);
 
 	if (dsim->doze_state == DOZE_STATE_NORMAL)
 		call_panel_ops(dsim, doze, dsim);

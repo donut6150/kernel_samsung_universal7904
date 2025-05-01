@@ -49,7 +49,7 @@ static int decon_set_doze(struct decon_device *decon)
 	struct decon_mode_info psr;
 	struct decon_param p;
 	int ret = 0;
-	//struct dsim_device *dsim = container_of(decon->out_sd[0], struct dsim_device, sd);
+	struct dsim_device *dsim = container_of(decon->out_sd[0], struct dsim_device, sd);
 
 	decon_info("+ %s: %d, %d\n", __func__, decon->state, decon->doze_state);
 
@@ -125,7 +125,7 @@ static int decon_set_doze(struct decon_device *decon)
 	decon->state = DECON_STATE_ON;
 	decon_reg_set_int(decon->id, &psr, 1);
 	decon->doze_state = DOZE_STATE_DOZE;
-	//call_panel_ops(dsim, displayon, dsim);
+	call_panel_ops(dsim, displayon, dsim);
 
 err:
 	mutex_unlock(&decon->lock);
@@ -222,6 +222,8 @@ static int decon_set_doze_suspend(struct decon_device *decon)
 #endif
 	decon->state = DECON_STATE_OFF;
 	decon->doze_state = DOZE_STATE_DOZE_SUSPEND;
+	decon_info("%s: decon->state is DECON_STATE_OFF", __func__);
+	decon_info("%s: decon->doze_state is DOZE_STATE_DOZE_SUSPEND", __func__);
 
 err:
 	mutex_unlock(&decon->lock);
@@ -234,6 +236,17 @@ err:
 int decon_set_doze_mode(struct decon_device *decon, u32 mode)
 {
 	int ret = 0;
+
+	if (mode == DECON_PWR_DOZE_SUSPEND) {
+    	decon_info("%s: Preventing transition into DOZE_SUSPEND\n", __func__);
+		mode = DECON_PWR_DOZE;
+    	return 0;
+	} else if (mode == DECON_PWR_DOZE && decon->state == DECON_STATE_OFF) {
+		decon_info("%s: DECON_PWR_DOZE requested during DECON_STATE_OFF, powering on display\n", __func__);
+		decon_enable(decon);
+		mode = DECON_PWR_DOZE;
+		return 0;
+	}
 
 	int (*doze_cb[DECON_PWR_MAX])(struct decon_device *) = {
 		NULL,
@@ -255,11 +268,19 @@ int decon_set_doze_mode(struct decon_device *decon, u32 mode)
 
 	decon_info("%s: decon%d pwr_state %d(%s)\n", __func__, decon->id, mode, (mode == DECON_PWR_DOZE) ? "DOZE" : "DOZE_SUSPEND");
 
-	decon_simple_notifier_call_chain(DECON_EARLY_EVENT_DOZE, (mode == DECON_PWR_DOZE) ? FB_BLANK_UNBLANK : FB_BLANK_POWERDOWN);
+	if (mode == DECON_PWR_DOZE) {
+		decon_simple_notifier_call_chain(DECON_EVENT_DOZE, FB_BLANK_UNBLANK);
+	} else if (mode == DECON_PWR_DOZE_SUSPEND) {
+		decon_simple_notifier_call_chain(DECON_EVENT_DOZE, FB_BLANK_POWERDOWN);
+	}
 
 	ret = doze_cb[mode](decon);
 
-	decon_simple_notifier_call_chain(DECON_EVENT_DOZE, (mode == DECON_PWR_DOZE) ? FB_BLANK_UNBLANK : FB_BLANK_POWERDOWN);
+	if (mode == DECON_PWR_DOZE) {
+		decon_simple_notifier_call_chain(DECON_EVENT_DOZE, FB_BLANK_UNBLANK);
+	} else if (mode == DECON_PWR_DOZE_SUSPEND) {
+		decon_simple_notifier_call_chain(DECON_EVENT_DOZE, FB_BLANK_POWERDOWN);
+	}	
 
 	return ret;
 }
