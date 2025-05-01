@@ -784,7 +784,9 @@ static int dsim_enable(struct dsim_device *dsim)
 		goto exit;
 	}
 
-	dsim_info("+ %s\n", __func__);
+	dsim_info("+ %s was called\n", __func__);
+	dsim_info("+ %s: IS_DOZE(dsim->doze_state) returned %d\n", IS_DOZE(dsim->doze_state));
+	dsim_info("+ %s: dsim->doze_state is %d", dsim->doze_state);
 
 #if defined(CONFIG_PM)
 	pm_runtime_get_sync(dsim->dev);
@@ -870,13 +872,14 @@ init_end:
 	enable_irq(dsim->res.irq);
 
 	if (state != DSIM_STATE_INIT) {
-		dsim_info("Panel init commands are transfered\n");
+		dsim_info("Panel init commands are transferred\n");
 		call_panel_ops(dsim, displayon, dsim);
 	}
 
 exit:
 #if defined(CONFIG_EXYNOS_DOZE)
 	dsim->doze_state = DOZE_STATE_NORMAL;
+	dsim_info("%s: doze_state: %d -> DOZE_STATE_NORMAL\n", __func__, dsim->doze_state);
 #endif
 	dsim_info("- %s\n", __func__);
 
@@ -895,6 +898,7 @@ static int dsim_disable(struct dsim_device *dsim)
 
 #if defined(CONFIG_EXYNOS_DOZE)
 	dsim->doze_state = DOZE_STATE_SUSPEND;
+	dsim_info("%s: doze_state: %d -> DOZE_STATE_DOZE\n", __func__, dsim->doze_state);
 #endif
 
 	/* Wait for current read & write CMDs. */
@@ -940,6 +944,7 @@ static int dsim_enter_ulps(struct dsim_device *dsim)
 	mutex_lock(&dsim->cmd_lock);
 	dsim->state = DSIM_STATE_ULPS;
 	mutex_unlock(&dsim->cmd_lock);
+	dsim_info("%s: dsim->state is %d -> DSIM_STATE_ULPS, dsim has entered ULPS\n", __func__, dsim->state);
 
 	disable_irq(dsim->res.irq);
 
@@ -1016,6 +1021,7 @@ static int dsim_exit_ulps(struct dsim_device *dsim)
 		dsim_dump(dsim);
 
 	dsim->state = DSIM_STATE_ON;
+	dsim_info("%s: dsim->state is %d -> DSIM_STATE_ON, dsim has exited ULPS\n", __func__, dsim->state);
 
 	enable_irq(dsim->res.irq);
 
