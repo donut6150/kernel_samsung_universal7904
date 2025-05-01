@@ -4,7 +4,7 @@
 #include <linux/types.h>
 #include <linux/kernel.h>
 
-#define EXTEND_BRIGHTNESS	355
+#define EXTEND_BRIGHTNESS	365
 #define UI_MAX_BRIGHTNESS	255
 #define UI_DEFAULT_BRIGHTNESS	128
 
