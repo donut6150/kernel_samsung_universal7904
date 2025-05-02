@@ -78,7 +78,7 @@ jobs:
     - name: Build DTB
       if: ${{ inputs.build_dtb == 'true' }}
       run: |
-        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="${{ inputs.kernel_version }}-KSU" dtb.img
+        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="-${{ inputs.kernel_version }}-KSU" dtb.img
         cp arch/arm64/boot/dtb.img AnyKernel3/dtb.img
 
 
@@ -107,10 +107,10 @@ jobs:
         [ -f "AnyKernel3/dtb.img" ] && FILES+=("dtb.img")
 
         cd AnyKernel3
-        KERNEL_VERSION=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d'"' -f2 | sed 's/+*$//')
         DEVICE="${{ inputs.device_name }}"
         DEVICE="${DEVICE^}"
-        ZIP_NAME="${DEVICE} ${KERNEL_VERSION}"
+        KERNEL_VERSION="${DEVICE} 4.4.177-ultrasonic-${{ inputs.kernel_version }}-KSU"
+        ZIP_NAME="${KERNEL_VERSION}"
         echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
         rm -f ../*.zip
         zip -r9 "${ZIP_NAME}" "${FILES[@]}"
