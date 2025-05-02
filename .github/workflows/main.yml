@@ -50,6 +50,9 @@ jobs:
         git clone --recurse-submodules https://github.com/${{ github.repository }} .
         git fetch --tags
 
+    - name: Mark work directory as safe for Git
+      run: git config --global --add safe.directory $GITHUB_WORKSPACE
+
     - name: Check for required binaries
       shell: bash
       run: |
