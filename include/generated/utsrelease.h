@@ -1,1 +1,1 @@
-#define UTS_RELEASE "4.4.177-ultrasonic v7.0-1-KSU"
+#define UTS_RELEASE "4.4.177-ultrasonic v8.0-KSU"
