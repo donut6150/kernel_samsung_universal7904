@@ -3,6 +3,9 @@ name: Kernel Builder Action
 on:
   workflow_dispatch:
     inputs:
+      device_name:
+        description: 'Device codename (e.g. a30s)'
+        required: true
       kernel_version:
         description: 'Kernel local version string (e.g., 1.0)'
         required: true
@@ -14,6 +17,10 @@ on:
         description: 'Upload artifact to releases (yes/no)'
         required: true
         default: 'no'
+        type: choice
+        options:
+          - yes
+          - no
 
 jobs:
   build:
@@ -60,7 +67,7 @@ jobs:
       run: make clean -j$(nproc)
 
     - name: Make defconfig
-      run: make ARCH=arm64 exynos7885-a30s_oneui_defconfig -j$(nproc)
+      run: make ARCH=arm64 exynos7885-${{ inputs.device_name }}_oneui_defconfig -j$(nproc)
 
     - name: Make kernel
       run: |
@@ -100,8 +107,11 @@ jobs:
 
         cd AnyKernel3
         KERNEL_VERSION=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d'"' -f2 | sed 's/+*$//')
-        ZIP_NAME="A30s ${KERNEL_VERSION}.zip"
-        rm -f ../A30s*.zip
+        DEVICE="${{ inputs.device_name }}"
+        DEVICE="${DEVICE^}"
+        ZIP_NAME="${DEVICE} ${KERNEL_VERSION}.zip"
+        echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
+        rm -f ../*.zip
         zip -r9 "$ZIP_NAME" "${FILES[@]}"
         mv "$ZIP_NAME" ../
         cd ..
@@ -110,7 +120,7 @@ jobs:
       if: ${{ inputs.upload_to_release == 'yes' }}
       uses: softprops/action-gh-release@v1
       with:
-        files: A30s${{ inputs.kernel_version }}.zip
+        files: ${{ env.ZIP_NAME }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       continue-on-error: false
@@ -120,4 +130,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: kernel-build-${{ inputs.kernel_version }}
-        path: A30s${{ inputs.kernel_version }}.zip
+        path: ${{ env.ZIP_NAME }}.zip
