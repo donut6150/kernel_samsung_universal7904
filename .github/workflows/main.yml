@@ -1,0 +1,123 @@
+name: Kernel Builder Action
+
+on:
+  workflow_dispatch:
+    inputs:
+      kernel_version:
+        description: 'Kernel local version string (e.g., 1.0)'
+        required: true
+      build_dtb:
+        description: 'Build DTB?'
+        required: false
+        default: 'true'
+      upload_to_release:
+        description: 'Upload artifact to releases (yes/no)'
+        required: true
+        default: 'no'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:21.10
+
+    steps:
+    - name: Fix sources for EOL Ubuntu 21.10
+      run: |
+        sed -i 's|http://archive.ubuntu.com/ubuntu|http://old-releases.ubuntu.com/ubuntu|g' /etc/apt/sources.list
+        sed -i 's|http://security.ubuntu.com/ubuntu|http://old-releases.ubuntu.com/ubuntu|g' /etc/apt/sources.list
+
+    - name: Install packages
+      run: |
+        apt update
+        DEBIAN_FRONTEND=noninteractive apt install -y \
+          build-essential bc zip curl git \
+          libncurses5-dev flex bison \
+          python-is-python3 ca-certificates unzip ccache
+
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Check for required binaries
+      shell: bash
+      run: |
+        REQUIRED_TOOLS=("make" "zip" "grep" "sed" "bc" "ccache" "git" "curl" "unzip")
+        MISSING=0
+        for tool in "${REQUIRED_TOOLS[@]}"; do
+          if ! command -v "$tool" &>/dev/null; then
+            echo "Missing required tool: $tool"
+            MISSING=1
+          fi
+        done
+        if [ "$MISSING" -ne 0 ]; then
+          echo "Aborting due to missing tools."
+          exit 1
+        fi
+
+    - name: Make clean
+      run: make clean -j$(nproc)
+
+    - name: Make defconfig
+      run: make ARCH=arm64 exynos7885-a30s_oneui_defconfig -j$(nproc)
+
+    - name: Make kernel
+      run: |
+        echo "Building kernel with CONFIG_LOCALVERSION=${{ inputs.kernel_version }}"
+        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="${{ inputs.kernel_version }}"
+
+
+    - name: Build DTB
+      if: ${{ inputs.build_dtb == 'true' }}
+      run: |
+        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="-v${{ inputs.kernel_version }}-KSU" dtb.img
+        cp arch/arm64/boot/dtb.img AnyKernel3/dtb.img
+
+
+    - name: Zip kernel
+      run: |
+        if [ ! -f arch/arm64/boot/Image ]; then
+          echo "Build failed: Image not found"
+          exit 1
+        fi
+
+        cp arch/arm64/boot/Image AnyKernel3/Image
+
+        FILES=(
+          "Image"
+          "version"
+          "META-INF/com/google/android/update-binary"
+          "META-INF/com/google/android/updater-script"
+          "tools/ak3-core.sh"
+          "tools/busybox"
+          "tools/magiskboot"
+          "tools/tweaks.zip"
+          "anykernel.sh"
+        )
+
+        [ -f "AnyKernel3/dtb.img" ] && FILES+=("dtb.img")
+
+        cd AnyKernel3
+        KERNEL_VERSION=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d'"' -f2 | sed 's/+*$//')
+        ZIP_NAME="A30s ${KERNEL_VERSION}.zip"
+        rm -f ../A30s*.zip
+        zip -r9 "$ZIP_NAME" "${FILES[@]}"
+        mv "$ZIP_NAME" ../
+        cd ..
+
+    - name: Upload Kernel Zip
+      if: ${{ inputs.upload_to_release == 'yes' }}
+      uses: softprops/action-gh-release@v1
+      with:
+        files: A30s${{ inputs.kernel_version }}.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      continue-on-error: false
+
+    - name: Upload Kernel Zip as Artifact
+      if: ${{ inputs.upload_to_release == 'no' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: kernel-build-${{ inputs.kernel_version }}
+        path: A30s${{ inputs.kernel_version }}.zip
