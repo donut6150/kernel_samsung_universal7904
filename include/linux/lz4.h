@@ -69,9 +69,9 @@
 #define LZ4_HASHTABLESIZE (1 << LZ4_MEMORY_USAGE)
 #define LZ4_HASH_SIZE_U32 (1 << LZ4_HASHLOG)
 
-#define LZ4HC_MIN_CLEVEL			3
-#define LZ4HC_DEFAULT_CLEVEL			9
-#define LZ4HC_MAX_CLEVEL			16
+#define LZ4HC_MIN_CLEVEL		9	// default: 3
+#define LZ4HC_DEFAULT_CLEVEL	16	// default: 9
+#define LZ4HC_MAX_CLEVEL		25	// default: 25
 
 #define LZ4HC_DICTIONARY_LOGSIZE 16
 #define LZ4HC_MAXD (1<<LZ4HC_DICTIONARY_LOGSIZE)
@@ -80,7 +80,7 @@
 #define LZ4HC_HASHTABLESIZE (1 << LZ4HC_HASH_LOG)
 #define LZ4HC_HASH_MASK (LZ4HC_HASHTABLESIZE - 1)
 
-#define LZ4FAST_DEFAULT_CLEVEL                   32
+#define LZ4FAST_DEFAULT_CLEVEL	24	// default: 32
 
 /*-************************************************************************
  *	STREAMING CONSTANTS AND STRUCTURES
