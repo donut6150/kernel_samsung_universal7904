@@ -21,6 +21,9 @@ on:
         options:
           - 'yes'
           - 'no'
+      ref:
+        description: 'Git ref (e.g., refs/tags/v8.1)'
+        required: true
 
 jobs:
   build:
