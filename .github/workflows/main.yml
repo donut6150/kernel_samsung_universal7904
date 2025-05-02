@@ -109,11 +109,11 @@ jobs:
         KERNEL_VERSION=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d'"' -f2 | sed 's/+*$//')
         DEVICE="${{ inputs.device_name }}"
         DEVICE="${DEVICE^}"
-        ZIP_NAME="${DEVICE} ${KERNEL_VERSION}.zip"
-        echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
+        ZIP_NAME="${DEVICE} ${KERNEL_VERSION}"
+        echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
         rm -f ../*.zip
-        zip -r9 "$ZIP_NAME" "${FILES[@]}"
-        mv "$ZIP_NAME" ../
+        zip -r9 "${ZIP_NAME}" "${FILES[@]}"
+        mv "${ZIP_NAME}" ../
         cd ..
 
     - name: Upload Kernel Zip
