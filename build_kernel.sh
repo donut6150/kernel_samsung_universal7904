@@ -14,10 +14,10 @@ run_with_timer() {
 }
 
 common() {
-    run_with_timer clean
-    run_with_timer defconfig "$1"
-    run_with_timer kernel
-    run_with_timer zip "$1" "$2"
+    clean
+    defconfig "$1"
+    kernel
+    zip "$1" "$2"
 }
 
 clean() {
@@ -101,4 +101,4 @@ echo "Starting build..."
 
 echo "Device: ${DEVICE}"
 echo "Build DTB: ${BUILD_DTB:-No}"
-common "$DEVICE" "$BUILD_DTB"
+run_with_timer common "$DEVICE" "$BUILD_DTB"
