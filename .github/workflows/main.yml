@@ -44,15 +44,15 @@ jobs:
           build-essential bc zip curl git \
           libncurses5-dev flex bison \
           python-is-python3 ca-certificates unzip ccache
-
+          
+    - name: Mark work directory as safe for Git
+      run: git config --global --add safe.directory $GITHUB_WORKSPACE
+            
     - name: Clone repo manually (with full history)
       run: |
         git clone --recurse-submodules https://github.com/${{ github.repository }} .
         git fetch --tags
-
-    - name: Mark work directory as safe for Git
-      run: git config --global --add safe.directory $GITHUB_WORKSPACE
-
+          
     - name: Check for required binaries
       shell: bash
       run: |
