@@ -120,6 +120,20 @@ jobs:
         mv "${ZIP_NAME}" ../
         cd ..
 
+    - name: Create Git Tag if Missing
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TAG_NAME: ${{ inputs.kernel_version }}
+      run: |
+        if git ls-remote --tags origin | grep -q "refs/tags/$TAG_NAME$"; then
+          echo "Tag '$TAG_NAME' already exists."
+        else
+          echo "Creating and pushing tag '$TAG_NAME'"
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag -a "$TAG_NAME" -m "GH Actions automated release: $TAG_NAME"
+          git push origin "$TAG_NAME"
+        fi
     - name: Upload kernel zip to release
       if: ${{ inputs.upload_to_release == 'yes' }}
       uses: softprops/action-gh-release@v1
