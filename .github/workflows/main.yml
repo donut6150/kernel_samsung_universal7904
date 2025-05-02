@@ -23,7 +23,7 @@ jobs:
         sed -i 's|http://archive.ubuntu.com/ubuntu|http://old-releases.ubuntu.com/ubuntu|g' /etc/apt/sources.list
         sed -i 's|http://security.ubuntu.com/ubuntu|http://old-releases.ubuntu.com/ubuntu|g' /etc/apt/sources.list
 
-    - name: Install Required Packages
+    - name: Install packages
       run: |
         apt update
         DEBIAN_FRONTEND=noninteractive apt install -y \
@@ -31,10 +31,12 @@ jobs:
           libncurses5-dev flex bison \
           python-is-python3 ca-certificates unzip ccache
 
-    - name: Checkout Repository
+    - name: Checkout repo
       uses: actions/checkout@v3
+      with:
+        submodules: recursive
 
-    - name: Check for Required Binaries
+    - name: Check for required binaries
       shell: bash
       run: |
         REQUIRED_TOOLS=("make" "zip" "grep" "sed" "bc" "ccache" "git" "curl" "unzip")
@@ -50,26 +52,26 @@ jobs:
           exit 1
         fi
 
-    - name: Clean Build
+    - name: Make clean
       run: make clean -j$(nproc)
 
-    - name: Defconfig
+    - name: Make defconfig
       run: make ARCH=arm64 exynos7885-a30s_oneui_defconfig -j$(nproc)
 
-    - name: Build Kernel
+    - name: Make kernel
       run: |
         echo "Building kernel with CONFIG_LOCALVERSION=${{ inputs.kernel_version }}"
         make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="${{ inputs.kernel_version }}"
 
 
-    - name: Build DTB (optional)
+    - name: Build DTB
       if: ${{ inputs.build_dtb == 'true' }}
       run: |
         make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="-v${{ inputs.kernel_version }}-KSU" dtb.img
         cp arch/arm64/boot/dtb.img AnyKernel3/dtb.img
 
 
-    - name: Package Kernel
+    - name: Zip kernel
       run: |
         if [ ! -f arch/arm64/boot/Image ]; then
           echo "Build failed: Image not found"
@@ -93,13 +95,24 @@ jobs:
         [ -f "AnyKernel3/dtb.img" ] && FILES+=("dtb.img")
 
         cd AnyKernel3
-        ZIP_NAME="A30s${{ inputs.kernel_version }}.zip"
+        KERNEL_VERSION=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d'"' -f2 | sed 's/+*$//')
+        ZIP_NAME="A30s ${KERNEL_VERSION}.zip"
         rm -f ../A30s*.zip
         zip -r9 "$ZIP_NAME" "${FILES[@]}"
         mv "$ZIP_NAME" ../
         cd ..
 
     - name: Upload Kernel Zip
+      if: ${{ inputs.upload_to_release == 'true' }}
+      uses: softprops/action-gh-release@v1
+      with:
+        files: A30s${{ inputs.kernel_version }}.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      continue-on-error: false
+
+    - name: Upload Kernel Zip as Artifact
+      if: ${{ inputs.upload_to_release == 'false' }}
       uses: actions/upload-artifact@v4
       with:
         name: kernel-build-${{ inputs.kernel_version }}
