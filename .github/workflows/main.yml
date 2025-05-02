@@ -18,6 +18,11 @@ jobs:
       image: ubuntu:21.10
 
     steps:
+    - name: Fix sources for EOL Ubuntu 21.10
+      run: |
+        sed -i 's|http://archive.ubuntu.com/ubuntu|http://old-releases.ubuntu.com/ubuntu|g' /etc/apt/sources.list
+        sed -i 's|http://security.ubuntu.com/ubuntu|http://old-releases.ubuntu.com/ubuntu|g' /etc/apt/sources.list
+
     - name: Install Required Packages
       run: |
         apt update
