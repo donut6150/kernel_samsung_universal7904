@@ -101,4 +101,4 @@ echo "Starting build..."
 
 echo "Device: ${DEVICE}"
 echo "Build DTB: ${BUILD_DTB:-No}"
-common
+common "$DEVICE" "$BUILD_DTB"
