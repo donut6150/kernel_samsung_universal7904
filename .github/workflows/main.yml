@@ -120,7 +120,12 @@ jobs:
         mv "${ZIP_NAME}" ../
         cd ..
 
-    - name: Create Git Tag if Missing
+    - name: Checkout full git history
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 
+
+    - name: Create git tag if missing
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TAG_NAME: ${{ inputs.kernel_version }}
