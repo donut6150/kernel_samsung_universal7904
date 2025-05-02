@@ -19,8 +19,8 @@ on:
         default: 'no'
         type: choice
         options:
-          - yes
-          - no
+          - 'yes'
+          - 'no'
 
 jobs:
   build:
