@@ -10,6 +10,10 @@ on:
         description: 'Build DTB?'
         required: false
         default: 'true'
+      upload_to_release:
+        description: 'Upload artifact to releases (yes/no)'
+        required: true
+        default: 'no'
 
 jobs:
   build:
@@ -103,7 +107,7 @@ jobs:
         cd ..
 
     - name: Upload Kernel Zip
-      if: ${{ inputs.upload_to_release == 'true' }}
+      if: ${{ inputs.upload_to_release == 'yes' }}
       uses: softprops/action-gh-release@v1
       with:
         files: A30s${{ inputs.kernel_version }}.zip
@@ -112,7 +116,7 @@ jobs:
       continue-on-error: false
 
     - name: Upload Kernel Zip as Artifact
-      if: ${{ inputs.upload_to_release == 'false' }}
+      if: ${{ inputs.upload_to_release == 'no' }}
       uses: actions/upload-artifact@v4
       with:
         name: kernel-build-${{ inputs.kernel_version }}
