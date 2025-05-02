@@ -17,6 +17,7 @@ vmlinux*
 *kallsyms*
 firmware_bak/
 .vscode/
-AnyKernel3/
 *.dtbo
 *.dtb
+AnyKernel3/Image
+AnyKernel3/dtb.img
