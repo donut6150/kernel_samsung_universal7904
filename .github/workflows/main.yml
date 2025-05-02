@@ -21,9 +21,6 @@ on:
         options:
           - 'yes'
           - 'no'
-  push:
-    branches:
-      master
 
 jobs:
   build:
