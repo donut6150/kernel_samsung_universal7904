@@ -45,10 +45,10 @@ jobs:
           libncurses5-dev flex bison \
           python-is-python3 ca-certificates unzip ccache
 
-    - name: Checkout repo
-      uses: actions/checkout@v3
-      with:
-        submodules: recursive
+    - name: Clone repo manually (with full history)
+      run: |
+        git clone --recurse-submodules https://github.com/${{ github.repository }} .
+        git fetch --tags
 
     - name: Check for required binaries
       shell: bash
@@ -77,13 +77,11 @@ jobs:
         echo "Building kernel with CONFIG_LOCALVERSION=${{ inputs.kernel_version }}"
         make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="${{ inputs.kernel_version }}"
 
-
     - name: Build DTB
       if: ${{ inputs.build_dtb == 'true' }}
       run: |
         make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="-${{ inputs.kernel_version }}-KSU" dtb.img
         cp arch/arm64/boot/dtb.img AnyKernel3/dtb.img
-
 
     - name: Zip kernel
       shell: bash
@@ -111,7 +109,7 @@ jobs:
 
         cd AnyKernel3
         DEVICE="${{ inputs.device_name }}"
-        DEVICE="${DEVICE^}"
+        DEVICE="${DEVICE^}"  # Capitalise first letter
         KERNEL_VERSION="${DEVICE} 4.4.177-ultrasonic-${{ inputs.kernel_version }}-KSU"
         ZIP_NAME="${KERNEL_VERSION}"
         echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
@@ -120,25 +118,22 @@ jobs:
         mv "${ZIP_NAME}" ../
         cd ..
 
-    - name: Checkout full git history
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 
-
     - name: Create git tag if missing
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TAG_NAME: ${{ inputs.kernel_version }}
       run: |
-        if git ls-remote --tags origin | grep -q "refs/tags/$TAG_NAME$"; then
-          echo "Tag '$TAG_NAME' already exists."
+        if git tag | grep -q "^${TAG_NAME}$"; then
+          echo "Tag '${TAG_NAME}' already exists locally."
         else
-          echo "Creating and pushing tag '$TAG_NAME'"
+          echo "Creating and pushing tag '${TAG_NAME}'"
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git tag -a "$TAG_NAME" -m "GH Actions automated release: $TAG_NAME"
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
           git push origin "$TAG_NAME"
         fi
+
     - name: Upload kernel zip to release
       if: ${{ inputs.upload_to_release == 'yes' }}
       uses: softprops/action-gh-release@v1
