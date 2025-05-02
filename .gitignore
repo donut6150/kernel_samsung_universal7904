@@ -21,3 +21,4 @@ firmware_bak/
 *.dtb
 AnyKernel3/Image
 AnyKernel3/dtb.img
+!Kconfig.dtbo
