@@ -3,6 +3,9 @@
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
+DEVICE=$1
+DTB=$2
+DTB_YN=$([[ "$DTB" == "dtb" ]] && echo " with DTB" || echo " without DTB")
 
 run_with_timer() {
     local start_time=$(date +%s.%N)
@@ -13,92 +16,51 @@ run_with_timer() {
     done
 }
 
-common() {
-    clean
-    defconfig "$1"
-    kernel
-    zip "$1" "$2"
-}
+run_with_timer echo "Current directory is $PWD"
+run_with_timer echo "Building for ${DEVICE}${DTB_YN}"
 
-clean() {
-    echo "Make clean..."
-    make clean -j4 2>&1 | tee log_clean.log
-}
+run_with_timer echo "Make clean..."
+run_with_timer make clean -j4 2>&1 | tee log_clean.log
 
-defconfig() {
-    local device="$1"
-    echo "Make defconfig..."
-    make ARCH=arm64 -j4 "exynos7885-${device}_oneui_defconfig" 2>&1 | tee log_defconfig.log
-}
+run_with_timer echo "Make defconfig..."
+run_with_timer make ARCH=arm64 -j4 "exynos7885-${DEVICE}_oneui_defconfig" 2>&1 | tee "log_${DEVICE}_defconfig.log"
 
-kernel() {
-    echo "Make kernel..."
-    make ARCH=arm64 -j4 2>&1 | tee log_kernel.log
-}
+run_with_timer echo "Make kernel..."
+run_with_timer make ARCH=arm64 -j4 2>&1 | tee log_${DEVICE}_kernel.log
 
-zip() {
-    local device=$1
-    local build_dtb=$2
-
-    if [ -s "arch/arm64/boot/Image" ]; then
-        echo -e "${GREEN}Build succeeded!"
-        KERNEL_VERSION=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d'"' -f2 | sed 's/+*$//')
-        echo -e "Kernel version: ${KERNEL_VERSION}"
-        
-        if [ ! -d "AnyKernel3" ]; then
-            echo "AnyKernel3: No such file or directory"
-            echo -e "${RED}Build failed, reason should be above this message${NC}"
-            return 1
-        fi
-        
-        cp arch/arm64/boot/Image AnyKernel3/Image
-
-        FILES=(
-            "Image"
-            "version"
-            "META-INF/com/google/android/update-binary"
-            "META-INF/com/google/android/updater-script"
-            "tools/ak3-core.sh"
-            "tools/busybox"
-            "tools/magiskboot"
-            "tools/tweaks.zip"
-            "anykernel.sh"
-        )
-        
-        if [ "$build_dtb" == "dtb" ]; then
-            echo -e "Building DTB..."
-            make ARCH=arm64 -j4 dtb.img 2>&1 | tee log_dtb.log
-            cp arch/arm64/boot/dtb.img AnyKernel3/dtb.img
-            FILES+=("dtb.img")
-        fi
-        
-        ZIPNAME="$(tr '[:lower:]' '[:upper:]' <<< ${device:0:1})${device:1} ${KERNEL_VERSION}.zip"
-        
-        cd AnyKernel3/ && zip -r9 "${ZIPNAME}" "${FILES[@]}" && mv "${ZIPNAME}" ../ && cd ..
-        
-        echo -e "Kernel zip: $PWD/${ZIPNAME}.zip${NC}"
-        echo -e "${GREEN}Make clean..."
-        make clean > /dev/null
-        echo -e "Done${NC}"
-    else
-        echo -e "${RED}Build failed, reason should be above this message${NC}"
+if [ -s "arch/arm64/boot/Image" ]; then
+    
+    echo -e "${GREEN}Build succeeded!"
+    KERNEL_VERSION=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d'"' -f2 | sed 's/+*$//')
+    echo -e "Kernel version: ${KERNEL_VERSION}"
+    
+    cp arch/arm64/boot/Image AnyKernel3/Image
+    FILES=(
+        "Image"
+        "version"
+        "META-INF/com/google/android/update-binary"
+        "META-INF/com/google/android/updater-script"
+        "tools/ak3-core.sh"
+        "tools/busybox"
+        "tools/magiskboot"
+        "tools/tweaks.zip"
+        "anykernel.sh"
+    )
+    
+    if [ "${DTB}" == "dtb" ]; then
+        echo -e "Building DTB..."
+        make ARCH=arm64 -j4 dtb.img 2>&1 | tee log_dtb.log
+        cp arch/arm64/boot/dtb.img AnyKernel3/dtb.img
+        FILES+=("dtb.img")
     fi
-}
-
-# Script starts here
-DEVICE="$1"
-BUILD_DTB="$2"
-
-if [ -z "$DEVICE" ]; then
-    echo -e "${RED}Usage: $0 <a10,a20,a20e,a30,a30s,a40> [dtb], dtb is optional${NC}"
-    echo -e "Examples:\n1) ./build_kernel.sh a30s dtb\t(Build for A30s along with DTB)"
-    echo -e "2) ./build_kernel.sh a30s\t(Build for A30s without DTB)"
-    exit 1
+    
+    ZIPNAME="$(tr '[:lower:]' '[:upper:]' <<< ${DEVICE:0:1})${DEVICE:1} ${KERNEL_VERSION}.zip"
+    cd AnyKernel3/ && zip -r9 "${ZIPNAME}" "${FILES[@]}" && mv "${ZIPNAME}" ../ && cd ..
+    echo -e "Kernel zip: $PWD/A30s ${KERNEL_VERSION}.zip${NC}"
+  
+    echo -e "${GREEN}Make clean..."
+    make clean > /dev/null
+    echo -e "Done${NC}"
+else
+    echo -e "${RED}Build failed, reason should be above this message${NC}"
 fi
-
-echo "Current directory is $PWD"
-echo "Starting build..."
-
-echo "Device: ${DEVICE}"
-echo "Build DTB: ${BUILD_DTB:-No}"
-run_with_timer common "$DEVICE" "$BUILD_DTB"
