@@ -22,3 +22,4 @@ firmware_bak/
 AnyKernel3/Image
 AnyKernel3/dtb.img
 !Kconfig.dtbo
+!AnyKernel3/tools/tweaks.zip
