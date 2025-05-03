@@ -134,11 +134,13 @@ jobs:
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
           git push origin "$TAG_NAME"
         fi
+        git checkout "$TAG_NAME"
 
     - name: Upload kernel zip to release
       if: ${{ inputs.upload_to_release == 'yes' }}
       uses: softprops/action-gh-release@v1
       with:
+        tag_name: "${{ inputs.kernel_version }}"
         files: "${{ env.ZIP_NAME }}.zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
