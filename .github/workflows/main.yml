@@ -120,7 +120,7 @@ jobs:
     - name: Create git tag if missing
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        TAG_NAME: v${{ inputs.kernel_version }}
+        TAG_NAME: "v${{ inputs.kernel_version }}"
       run: |
         if git tag | grep -q "^${TAG_NAME}$"; then
           echo "Tag '${TAG_NAME}' already exists locally."
