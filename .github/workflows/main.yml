@@ -7,7 +7,7 @@ on:
         description: 'Device codename (e.g. a30s)'
         required: true
       kernel_version:
-        description: 'Kernel local version string (e.g., 1.0)'
+        description: 'Kernel version (e.g., 1.0)'
         required: true
       build_dtb:
         description: 'Build DTB?'
@@ -75,13 +75,13 @@ jobs:
 
     - name: Make kernel
       run: |
-        echo "Building kernel with CONFIG_LOCALVERSION=${{ inputs.kernel_version }}"
-        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="${{ inputs.kernel_version }}"
+        echo "Building kernel with CONFIG_LOCALVERSION=-v${{ inputs.kernel_version }}-KSU"
+        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="-v${{ inputs.kernel_version }}-KSU"
 
     - name: Build DTB
       if: ${{ inputs.build_dtb == 'true' }}
       run: |
-        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="-${{ inputs.kernel_version }}-KSU" dtb.img
+        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="-v${{ inputs.kernel_version }}-KSU" dtb.img
         cp arch/arm64/boot/dtb.img AnyKernel3/dtb.img
 
     - name: Zip kernel
@@ -111,12 +111,10 @@ jobs:
         cd AnyKernel3
         DEVICE="${{ inputs.device_name }}"
         DEVICE="${DEVICE^}"  # Capitalise first letter
-        KERNEL_VERSION="${DEVICE} 4.4.177-ultrasonic-${{ inputs.kernel_version }}-KSU"
+        KERNEL_VERSION="${DEVICE} 4.4.177-ultrasonic-v${{ inputs.kernel_version }}-KSU"
         ZIP_NAME="${KERNEL_VERSION}"
         echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
-        rm -f ../*.zip
-        zip -r9 "${ZIP_NAME}" "${FILES[@]}"
-        mv "${ZIP_NAME}" ../
+        zip -r9 "../${ZIP_NAME}" "${FILES[@]}"
         cd ..
 
     - name: Create git tag if missing
@@ -129,7 +127,7 @@ jobs:
         else
           echo "Creating and pushing tag '${TAG_NAME}'"
           git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag -a "$TAG_NAME" -m "GH Actions automated release: $TAG_NAME"
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
           git push origin "$TAG_NAME"
