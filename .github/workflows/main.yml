@@ -138,7 +138,7 @@ jobs:
       if: ${{ inputs.upload_to_release == 'yes' }}
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: "$v{{ inputs.kernel_version }}"
+        tag_name: "v${{ inputs.kernel_version }}"
         files: "${{ env.ZIP_NAME }}.zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
