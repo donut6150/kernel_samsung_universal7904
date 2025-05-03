@@ -114,13 +114,13 @@ jobs:
         KERNEL_VERSION="${DEVICE} 4.4.177-ultrasonic-v${{ inputs.kernel_version }}-KSU"
         ZIP_NAME="${KERNEL_VERSION}"
         echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
-        zip -r9 "../${ZIP_NAME}" "${FILES[@]}"
+        zip -r9 "../${ZIP_NAME}.zip" "${FILES[@]}"
         cd ..
 
     - name: Create git tag if missing
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        TAG_NAME: ${{ inputs.kernel_version }}
+        TAG_NAME: v${{ inputs.kernel_version }}
       run: |
         if git tag | grep -q "^${TAG_NAME}$"; then
           echo "Tag '${TAG_NAME}' already exists locally."
@@ -138,7 +138,7 @@ jobs:
       if: ${{ inputs.upload_to_release == 'yes' }}
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: "${{ inputs.kernel_version }}"
+        tag_name: "$v{{ inputs.kernel_version }}"
         files: "${{ env.ZIP_NAME }}.zip"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
