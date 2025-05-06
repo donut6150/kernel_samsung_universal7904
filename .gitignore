@@ -15,7 +15,7 @@ modules.*
 vmlinux*
 *.map
 *kallsyms*
-firmware_bak/
+*bak/
 .vscode/
 *.dtbo
 *.dtb
