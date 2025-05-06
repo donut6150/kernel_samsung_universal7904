@@ -26,6 +26,10 @@ extern u64 zswap_pool_pages;
 extern atomic_t zswap_stored_pages;
 #endif
 
+#ifdef CONFIG_KSU_SUSFS
+#include <linux/susfs.h>
+#endif
+
 void task_mem(struct seq_file *m, struct mm_struct *mm)
 {
 	unsigned long data, text, lib, swap, ptes, pmds;
@@ -369,6 +373,10 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
 	unsigned long start, end;
 	dev_t dev = 0;
 	const char *name = NULL;
+#ifdef CONFIG_KSU_SUSFS_SUS_MAPS
+	char *out_name;
+	int ret = 0;
+#endif
 
 	if (file) {
 		struct inode *inode = file_inode(vma->vm_file);
@@ -381,6 +389,17 @@ show_map_vma(struct seq_file *m, struct vm_area_struct *vma, int is_pid)
 	start = vma->vm_start;
 	end = vma->vm_end;
 	show_vma_header_prefix(m, start, end, flags, pgoff, dev, ino);
+
+#ifdef CONFIG_KSU_SUSFS_SUS_MAPS
+	if (ret == 2) {
+		seq_pad(m, ' ');
+		seq_puts(m, out_name);
+		seq_putc(m, '\n');
+		kfree(out_name);
+		return;
+	}
+	kfree(out_name);
+#endif
 
 	/*
 	 * Print the dentry name for named mappings, and a

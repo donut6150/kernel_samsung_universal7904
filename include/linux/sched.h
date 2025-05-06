@@ -2067,6 +2067,10 @@ struct task_struct {
 	struct task_integrity *integrity;
 #endif
 	int pagefault_disabled;
+#ifdef CONFIG_KSU_SUSFS
+	u64 susfs_task_state;
+	u64 susfs_last_fake_mnt_id;
+#endif
 /* CPU-specific state of this task */
 	struct thread_struct thread;
 /*
