@@ -633,6 +633,14 @@ static int s6e8fc0_displayon(struct lcd_info *lcd)
 	return ret;
 }
 
+int doze_displayon()
+{
+	struct decon_device *decon = get_decon_drvdata(0);
+	struct dsim_device *dsim = container_of(decon->out_sd[0], struct dsim_device, sd);
+	struct lcd_info *lcd = dsim->priv.par;
+	return s6e8fc0_displayon(lcd);
+}
+
 static int s6e8fc0_init(struct lcd_info *lcd)
 {
 	int ret = 0;

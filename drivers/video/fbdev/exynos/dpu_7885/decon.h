@@ -1247,7 +1247,7 @@ int decon_enable(struct decon_device *decon);
 int decon_disable(struct decon_device *decon);
 
 /* turn on display if AOD always on */
-int s6e8fc1_dozedisplayon();
+int doze_displayon();
 
 /* common function API */
 bool decon_validate_x_alignment(struct decon_device *decon, int x, u32 w,

@@ -249,7 +249,7 @@ int decon_set_doze_mode(struct decon_device *decon, u32 mode)
 		decon_info("%s: DECON_PWR_DOZE requested during DECON_STATE_OFF, powering on display\n", __func__);
 
 		decon_enable(decon);
-		s6e8fc1_dozedisplayon();
+		doze_displayon();
 		mode = DECON_PWR_DOZE;
 		return 0;
 	}
