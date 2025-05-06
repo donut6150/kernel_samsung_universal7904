@@ -1551,6 +1551,14 @@ config CRYPTO_LZO
 	help
 	  This is the LZO algorithm.
 
+config CRYPTO_LZO_RLE
+	tristate "LZO-RLE compression algorithm"
+	select CRYPTO_ALGAPI
+	select LZO_COMPRESS
+	select LZO_DECOMPRESS
+	help
+	  This is the LZO-RLE algorithm.
+
 config CRYPTO_842
 	tristate "842 compression algorithm"
 	select CRYPTO_ALGAPI
