@@ -1,7 +1,7 @@
 VERSION = 4
 PATCHLEVEL = 4
 SUBLEVEL = 177
-EXTRAVERSION = -ultrasonic v8.1
+EXTRAVERSION = -ultrasonic v10.1
 NAME = Blurry Fish Butt
 
 export ANDROID_MAJOR_VERSION=r
