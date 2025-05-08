@@ -29,7 +29,6 @@
 #include <linux/videodev2_exynos_camera.h>
 #include <linux/v4l2-mediabus.h>
 #include <linux/bug.h>
-#include <linux/kthread.h>
 
 #include "fimc-is-type.h"
 #include "fimc-is-core.h"
@@ -914,7 +913,7 @@ static int fimc_is_group_task_start(struct fimc_is_groupmgr *groupmgr,
 
 	init_kthread_worker(&gtask->worker);
 	snprintf(name, sizeof(name), "fimc_is_gw%d", gtask->id);
-	gtask->task = kthread_run_perf_critical(cpu_perf_mask, kthread_worker_fn, &gtask->worker, name);
+	gtask->task = kthread_run(kthread_worker_fn, &gtask->worker, name);
 	if (IS_ERR(gtask->task)) {
 		err("failed to create group_task%d, err(%ld)\n",
 			gtask->id, PTR_ERR(gtask->task));

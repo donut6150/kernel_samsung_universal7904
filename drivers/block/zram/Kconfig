@@ -39,10 +39,6 @@ config ZRAM_DEF_COMP_ZSTD
 	bool "zstd"
 	depends on CRYPTO_ZSTD
 
-config ZRAM_DEF_COMP_LZO_RLE
-	bool "lzo-rle"
-	depends on CRYPTO_LZO_RLE
-
 endchoice
 
 config ZRAM_DEF_COMP

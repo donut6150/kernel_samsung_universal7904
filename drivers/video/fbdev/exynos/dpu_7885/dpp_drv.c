@@ -1067,7 +1067,7 @@ static int dpp_init_resources(struct dpp_device *dpp, struct platform_device *pd
 	dpp_info("irq no = %lld\n", res->start);
 
 	dpp->res.dma_irq = res->start;
-	ret = devm_request_irq(dpp->dev, res->start, dma_irq_handler, IRQF_PERF_AFFINE,
+	ret = devm_request_irq(dpp->dev, res->start, dma_irq_handler, 0,
 			pdev->name, dpp);
 	if (ret) {
 		dpp_err("failed to install DPU DMA irq\n");
@@ -1084,7 +1084,7 @@ static int dpp_init_resources(struct dpp_device *dpp, struct platform_device *pd
 		dpp_info("dpp irq no = %lld\n", res->start);
 
 		dpp->res.irq = res->start;
-		ret = devm_request_irq(dpp->dev, res->start, dpp_irq_handler, IRQF_PERF_AFFINE,
+		ret = devm_request_irq(dpp->dev, res->start, dpp_irq_handler, 0,
 				pdev->name, dpp);
 		if (ret) {
 			dpp_err("failed to install DPP irq\n");

@@ -12,7 +12,6 @@
 
 #include <linux/videodev2.h>
 #include <linux/videodev2_exynos_camera.h>
-#include <linux/kthread.h>
 
 #include "interface/fimc-is-interface-library.h"
 #include "interface/fimc-is-interface-ddk.h"
@@ -457,7 +456,7 @@ int fimc_is_sensor_init_sensor_thread(struct fimc_is_device_sensor_peri *sensor_
 	if (sensor_peri->sensor_task == NULL) {
 		spin_lock_init(&sensor_peri->sensor_work_lock);
 		init_kthread_worker(&sensor_peri->sensor_worker);
-		sensor_peri->sensor_task = kthread_run_perf_critical(cpu_perf_mask, kthread_worker_fn,
+		sensor_peri->sensor_task = kthread_run(kthread_worker_fn,
 						&sensor_peri->sensor_worker,
 						"fimc_is_sen_sensor_work");
 		if (IS_ERR(sensor_peri->sensor_task)) {
