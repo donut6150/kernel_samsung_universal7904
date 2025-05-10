@@ -48,8 +48,9 @@ jobs:
     - name: Clone repo manually (with full history)
       run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
-        git clone --recurse-submodules https://github.com/${{ github.repository }} .
+        git clone --recurse-submodules https://github.com/${{ github.repository }} kernel/
         git fetch --tags
+        chmod 0777 -R kernel/
           
     - name: Check for required binaries
       shell: bash
