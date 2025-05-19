@@ -23,7 +23,7 @@ run_with_timer echo "Building for ${DEVICE}${DTB_YN}"
 
 run_with_timer echo "Make clean..."
 run_with_timer make clean -j4 2>&1 | tee log_clean.log
-rm -rf include/generated/ include/config/auto.conf
+rm -rf include/generated/ include/config/
 
 run_with_timer echo "Make defconfig..."
 run_with_timer make ARCH=arm64 -j4 "exynos7885-${DEVICE}_oneui_defconfig" 2>&1 | tee "log_${DEVICE}_defconfig.log"
@@ -65,6 +65,7 @@ if [ -s "arch/arm64/boot/Image" ]; then
   
     echo -e "${GREEN}Make clean..."
     make clean > /dev/null
+    rm -rf include/generated/ include/config/
     echo -e "Done${NC}"
 
     sed -i "1s|^.*$$|[KERNELVERSION]|" AnyKernel3/version
