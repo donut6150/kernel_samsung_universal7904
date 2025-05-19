@@ -2,7 +2,7 @@
 
     It has been auto-edited by fixincludes from:
 
-	"/tmp/e6907faf0e32af832a212b16710470e7/sysroot/usr/include/linux/a.out.h"
+	"/home/cl3kener/android/toolchain/uber/out/aarch64-linux-android-4.9/arch-arm64/usr/include/linux/a.out.h"
 
     This had to be done to correct non-standard usages in the
     original, manufacturer supplied header file.  */
