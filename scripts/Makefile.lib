@@ -168,6 +168,7 @@ ld_flags       = $(LDFLAGS) $(ldflags-y)
 dtc_cpp_flags  = -Wp,-MD,$(depfile).pre.tmp -nostdinc                    \
 		 -I$(srctree)/arch/$(SRCARCH)/boot/dts                   \
 		 -I$(srctree)/scripts/dtc/include-prefixes               \
+		 -I$(srctree)/include									 \
 		 -I$(srctree)/drivers/of/testcase-data                   \
 		 -undef -D__DTS__                                        \
 		 -DANDROID_VERSION=$(ANDROID_VERSION)                    \
