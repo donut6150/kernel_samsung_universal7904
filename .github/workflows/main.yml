@@ -109,7 +109,7 @@ jobs:
         cd AnyKernel3
         DEVICE="${{ inputs.device_name }}"
         DEVICE="${DEVICE^}"  # Capitalise first letter
-        KERNEL_VERSION="${DEVICE} 4.4.177-BombKernel-v${{ inputs.kernel_version }}-KSU"
+        KERNEL_VERSION="${DEVICE} 4.4.177-v${{ inputs.kernel_version }}-KSU"
         ZIP_NAME="${KERNEL_VERSION}"
         echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
         zip -r9 "../${ZIP_NAME}.zip" "${FILES[@]}"
