@@ -1,5 +1,7 @@
 #!/bin/bash
 
+trap "echo KeyboardInterrupt!; exit 1" INT
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
@@ -55,6 +57,8 @@ if [ -s "arch/arm64/boot/Image" ]; then
         FILES+=("dtb.img")
     fi
     
+    sed -i "1s|\[.*\]|${KERNEL_VERSION}|" AnyKernel3/version
+
     ZIPNAME="$(tr '[:lower:]' '[:upper:]' <<< ${DEVICE:0:1})${DEVICE:1} ${KERNEL_VERSION}.zip"
     cd AnyKernel3/ && zip -r9 "${ZIPNAME}" "${FILES[@]}" && mv "${ZIPNAME}" ../ && cd ..
     echo -e "Kernel zip: $PWD/A30s ${KERNEL_VERSION}.zip${NC}"
@@ -62,6 +66,8 @@ if [ -s "arch/arm64/boot/Image" ]; then
     echo -e "${GREEN}Make clean..."
     make clean > /dev/null
     echo -e "Done${NC}"
+
+    sed -i "1s|^.*$$|[KERNELVERSION]|" AnyKernel3/version
 else
     echo -e "${RED}Build failed, reason should be above this message${NC}"
 fi
