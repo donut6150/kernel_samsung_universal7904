@@ -26,6 +26,7 @@ obj-$(CONFIG_SEC_DEBUG)			+= sec_debug_hard_reset_hook.o
 obj-$(CONFIG_SEC_DEBUG_RESET_REASON)	+= sec_debug_reset_reason.o
 obj-$(CONFIG_SEC_DEBUG_EXTRA_INFO)	+= sec_debug_extra_info.o
 obj-$(CONFIG_SEC_DEBUG_HW_PARAM)	+= sec_debug_hw_param.o
+obj-$(CONFIG_SEC_DEBUG_LAST_KMSG)	+= sec_debug_last_kmsg.o
 obj-$(CONFIG_SEC_DEBUG_AUTO_SUMMARY)	+= sec_debug_auto_summary.o
 obj-$(CONFIG_SEC_UPLOAD)		+= sec_upload.o
 obj-$(CONFIG_SEC_DEBUG_INIT_LOG)      += sec_debug_init_log.o
