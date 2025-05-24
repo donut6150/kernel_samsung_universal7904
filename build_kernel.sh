@@ -57,7 +57,7 @@ if [ -s "arch/arm64/boot/Image" ]; then
         FILES+=("dtb.img")
     fi
     
-    sed -i "1s|\[.*\]|${KERNEL_VERSION}|" AnyKernel3/version
+    sed -i "1s/.*/${KERNEL_VERSION}/" AnyKernel3/version
 
     ZIPNAME="$(tr '[:lower:]' '[:upper:]' <<< ${DEVICE:0:1})${DEVICE:1} ${KERNEL_VERSION}.zip"
     cd AnyKernel3/ && zip -r9 "${ZIPNAME}" "${FILES[@]}" && mv "${ZIPNAME}" ../ && cd ..
@@ -68,7 +68,7 @@ if [ -s "arch/arm64/boot/Image" ]; then
     rm -rf include/generated/ include/config/
     echo -e "Done${NC}"
 
-    sed -i "1s|^.*$$|[KERNELVERSION]|" AnyKernel3/version
+    sed -i "1s/.*/KERNELVERSION/" AnyKernel3/version
 else
     echo -e "${RED}Build failed, reason should be above this message${NC}"
 fi
