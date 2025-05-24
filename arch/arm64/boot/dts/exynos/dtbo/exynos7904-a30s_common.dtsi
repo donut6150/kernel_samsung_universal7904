@@ -864,7 +864,7 @@
 						ctrl-type = <PM_QOS_MIN_LIMIT>;
 						execution-mode = <AARCH64_MODE>;
 							/* big	    lit */
-						table = < 1768000  1586000
+						table = < 1768000  1690000
 							  1664000  839000
 							  1560000  839000
 							  1352000  839000
@@ -877,8 +877,8 @@
 						ctrl-type = <PM_QOS_MAX_LIMIT>;
 						execution-mode = <AARCH64_MODE>;
 							/* big	    lit */
-						table = < 1768000 1586000
-							  1664000 1586000
+						table = < 1768000 1690000
+							  1664000 1690000
 							  1560000 1586000
 							  1352000 1586000
 							  1144000 1352000

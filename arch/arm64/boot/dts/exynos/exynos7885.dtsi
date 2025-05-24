@@ -261,6 +261,8 @@
 
 			min-freq = <449000>;
 
+			boost_supported;
+
 			/* PM QoS Class ID*/
 			pm_qos-min-class = <3>;
 			pm_qos-max-class = <4>;
@@ -303,6 +305,8 @@
 			dm-type = <DM_CPU_CL1>;
 
 			min-freq = <936000>;
+
+			boost_supported;
 
 			/* PM QoS Class ID*/
 			pm_qos-min-class = <5>;
@@ -3078,12 +3082,12 @@
 				ctrl-type = <PM_QOS_MAX_LIMIT>;
 				execution-mode = <AARCH64_MODE>;
 					/* big	    lit */
-				table = < 2184000 1586000
-					  2080000 1586000
-					  1976000 1586000
-					  1872000 1586000
-					  1768000 1586000
-					  1664000 1586000
+				table = < 2184000 1690000
+					  2080000 1690000
+					  1976000 1690000
+					  1872000 1690000
+					  1768000 1690000
+					  1664000 1690000
 					  1560000 1586000
 					  1352000 1586000
 					  1144000 1352000
