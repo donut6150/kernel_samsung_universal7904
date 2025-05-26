@@ -49,6 +49,8 @@ jobs:
         git fetch --tags
         chmod 0777 -R .
         dos2unix ./toolchain/gcc/linux-x86/aarch64/**/*
+        chmod +x ./toolchain/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/*
+        chmod +x ./toolchain/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/aarch64-linux-android/bin/*
           
     - name: Check for required binaries
       shell: bash
