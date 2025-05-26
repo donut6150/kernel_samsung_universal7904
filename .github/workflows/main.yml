@@ -66,6 +66,17 @@ jobs:
           exit 1
         fi
 
+    - name: Silence missing libmpfr.so.4 error
+      run: |
+        LIB_PATH=$(ldconfig -p | grep libmpfr.so.6 | head -n1 | awk '{print $NF}')
+        if [ -f "$LIB_PATH" ]; then
+          ln -sf "$LIB_PATH" /usr/lib/x86_64-linux-gnu/libmpfr.so.4
+          echo "Symlinked libmpfr.so.4 -> $LIB_PATH"
+        else
+          echo "libmpfr.so.6 not found, aborting."
+          exit 1
+        fi
+
     - name: Make clean
       run: make clean -j$(nproc)
 
