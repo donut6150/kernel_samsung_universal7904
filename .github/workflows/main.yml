@@ -40,6 +40,7 @@ jobs:
         DEBIAN_FRONTEND=noninteractive apt install -y \
           build-essential bc zip curl git \
           libncurses5-dev flex bison \
+          libmpfr-dev libgmp-dev libisl-dev libcloog-isl-dev \
           python-is-python3 ca-certificates unzip ccache
 
     - name: Clone repo manually (with full history)
