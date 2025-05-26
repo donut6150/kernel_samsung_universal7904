@@ -81,12 +81,12 @@ jobs:
       run: make clean -j$(nproc)
 
     - name: Make defconfig
-      run: make ARCH=arm64 exynos7885-${{ inputs.device_name }}_oneui_defconfig -j$(nproc)
+      run: make ARCH=arm64 exynos7885-${{ inputs.device_name }}_oneui_defconfig -j$(nproc) CROSS_COMPILE=prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/aarch64-linux-android/bin/
 
     - name: Make kernel
       run: |
         echo "Building kernel with CONFIG_LOCALVERSION=-v${{ inputs.kernel_version }}-KSU"
-        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="-v${{ inputs.kernel_version }}-KSU"
+        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="-v${{ inputs.kernel_version }}-KSU" CROSS_COMPILE=prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/aarch64-linux-android/bin
 
     - name: Build DTB
       if: ${{ inputs.build_dtb == 'true' }}
