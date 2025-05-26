@@ -1,7 +1,7 @@
 VERSION = 4
 PATCHLEVEL = 4
 SUBLEVEL = 177
-EXTRAVERSION = -v15
+EXTRAVERSION = -v15.1
 NAME = Blurry Fish Butt
 
 export ANDROID_MAJOR_VERSION=r
@@ -259,7 +259,11 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
 export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		?=arm64
+ifeq ($(ACTIONS),y)
+CROSS_COMPILE	?=$(srctree)/toolchain/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+else
 CROSS_COMPILE	?=$(srctree)/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+endif
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
