@@ -80,17 +80,17 @@ jobs:
       run: make clean -j$(nproc)
 
     - name: Make defconfig
-      run: make ARCH=arm64 exynos7885-${{ inputs.device_name }}_oneui_defconfig -j$(nproc)
+      run: make ARCH=arm64 exynos7885-${{ inputs.device_name }}_oneui_defconfig -j$(nproc) ACTIONS=y
 
     - name: Make kernel
       run: |
-        echo "Building kernel with CONFIG_LOCALVERSION=-v${{ inputs.kernel_version }}-KSU"
-        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="-v${{ inputs.kernel_version }}-KSU"
+        echo "Building kernel with CONFIG_LOCALVERSION=-v${{ inputs.kernel_version }}-KSU ACTIONS=y"
+        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="-v${{ inputs.kernel_version }}-KSU" ACTIONS=y
 
     - name: Build DTB
       if: ${{ inputs.build_dtb == 'true' }}
       run: |
-        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="-v${{ inputs.kernel_version }}-KSU" dtb.img
+        make ARCH=arm64 -j$(nproc) CONFIG_LOCALVERSION="-v${{ inputs.kernel_version }}-KSU" ACTIONS=y dtb.img
         cp arch/arm64/boot/dtb.img AnyKernel3/dtb.img
 
     - name: Zip kernel
