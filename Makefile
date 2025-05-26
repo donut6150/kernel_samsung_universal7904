@@ -261,8 +261,10 @@ export KBUILD_BUILDHOST := $(SUBARCH)
 ARCH		?=arm64
 ifeq ($(ACTIONS),y)
 CROSS_COMPILE	?=$(srctree)/toolchain/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+$(warning GitHub Actions detected, using Samsung toolchain!)
 else
 CROSS_COMPILE	?=$(srctree)/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+$(warning Normal build detected, using UBERTC)
 endif
 
 # Architecture as present in compile.h
