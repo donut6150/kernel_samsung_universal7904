@@ -39,7 +39,7 @@ jobs:
         apt update
         DEBIAN_FRONTEND=noninteractive apt install -y \
           build-essential bc zip curl git \
-          libncurses5-dev flex bison \
+          libncurses5-dev flex bison dos2unix \
           python-is-python3 ca-certificates unzip ccache
 
     - name: Clone repo manually (with full history)
