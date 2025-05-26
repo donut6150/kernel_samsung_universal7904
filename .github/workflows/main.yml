@@ -48,6 +48,7 @@ jobs:
         git clone --recurse-submodules https://github.com/${{ github.repository }} .
         git fetch --tags
         chmod 0777 -R .
+        dos2unix ./toolchain/gcc/linux-x86/aarch64/**/*
           
     - name: Check for required binaries
       shell: bash
