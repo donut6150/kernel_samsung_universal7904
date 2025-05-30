@@ -347,15 +347,15 @@ scripts/Kbuild.include: ;
 include scripts/Kbuild.include
 
 # Make variables (CC, etc...)
-AS		= $(CROSS_COMPILE)as
-LD		= $(CROSS_COMPILE)ld
+AS		= ccache $(CROSS_COMPILE)as
+LD		= ccache $(CROSS_COMPILE)ld
 CC		= ccache $(CROSS_COMPILE)gcc
-CPP		= $(CC) -E
-AR		= $(CROSS_COMPILE)ar
-NM		= $(CROSS_COMPILE)nm
-STRIP		= $(CROSS_COMPILE)strip
-OBJCOPY		= $(CROSS_COMPILE)objcopy
-OBJDUMP		= $(CROSS_COMPILE)objdump
+CPP		= ccache $(CC) -E
+AR		= ccache $(CROSS_COMPILE)ar
+NM		= ccache $(CROSS_COMPILE)nm
+STRIP		= ccache $(CROSS_COMPILE)strip
+OBJCOPY		= ccache $(CROSS_COMPILE)objcopy
+OBJDUMP		= ccache $(CROSS_COMPILE)objdump
 AWK		= awk
 GENKSYMS	= scripts/genksyms/genksyms
 INSTALLKERNEL  := installkernel
