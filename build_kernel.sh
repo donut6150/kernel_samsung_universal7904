@@ -1,5 +1,9 @@
 #!/bin/bash
 
+start_time=$(date +%s)
+
+set -euo pipefail
+[[ -n "${3:-}" ]] && set "-$3"
 trap "echo KeyboardInterrupt!; exit 1" INT
 
 RED='\033[0;31m'
@@ -8,31 +12,33 @@ NC='\033[0m'
 DEVICE=$1
 DTB=$2
 DTB_YN=$([[ "$DTB" == "dtb" ]] && echo " with DTB" || echo " without DTB")
+ROOT_DIR=$(pwd)
 
-run_with_timer() {
-    local start_time=$(date +%s.%N)
-    "$@" 2>&1 | while IFS= read -r line; do
-        now=$(date +%s.%N)
-        elapsed=$(echo "$now - $start_time" | bc)
-        printf "[%.6f]\t%s\n" "$elapsed" "$line"
-    done
+cd KernelSU-Next/
+CHASH=$(git show next --format=%h -s)
+cd ..
+
+LOCALVER="-KSUN@${CHASH}"
+
+clean() {
+    cd ${ROOT_DIR}/
+    echo "Current directory is $PWD"
+    echo "Make clean..."
+    make clean -j4 2>&1 | tee log_clean.log
+    rm -rf include/generated/ include/config/
 }
 
-run_with_timer echo "Current directory is $PWD"
-run_with_timer echo "Building for ${DEVICE}${DTB_YN}"
+defconfig() {
+    echo "Make defconfig..."
+    make LOCALVERSION=\"${LOCALVER}\" ARCH=arm64 -j4 "exynos7885-${DEVICE}_oneui_defconfig" 2>&1 | tee "log_${DEVICE}_defconfig.log"
+}
 
-run_with_timer echo "Make clean..."
-run_with_timer make clean -j4 2>&1 | tee log_clean.log
-rm -rf include/generated/ include/config/
+kernel() {
+    echo "Make kernel..."
+    make LOCALVERSION=\"${LOCALVER}\" ARCH=arm64 -j4 2>&1 | tee log_${DEVICE}_kernel.log
+}
 
-run_with_timer echo "Make defconfig..."
-run_with_timer make ARCH=arm64 -j4 "exynos7885-${DEVICE}_oneui_defconfig" 2>&1 | tee "log_${DEVICE}_defconfig.log"
-
-run_with_timer echo "Make kernel..."
-run_with_timer make ARCH=arm64 -j4 2>&1 | tee log_${DEVICE}_kernel.log
-
-if [ -s "arch/arm64/boot/Image" ]; then
-    
+zip_kernel() {
     echo -e "${GREEN}Build succeeded!"
     KERNEL_VERSION=$(grep UTS_RELEASE include/generated/utsrelease.h | cut -d'"' -f2 | sed 's/+*$//')
     echo -e "Kernel version: ${KERNEL_VERSION}"
@@ -60,15 +66,35 @@ if [ -s "arch/arm64/boot/Image" ]; then
     sed -i "1s/.*/${KERNEL_VERSION}/" AnyKernel3/version
 
     ZIPNAME="$(tr '[:lower:]' '[:upper:]' <<< ${DEVICE:0:1})${DEVICE:1} ${KERNEL_VERSION}.zip"
-    cd AnyKernel3/ && zip -r9 "${ZIPNAME}" "${FILES[@]}" && mv "${ZIPNAME}" ../ && cd ..
-    echo -e "Kernel zip: $PWD/A30s ${KERNEL_VERSION}.zip${NC}"
-  
-    echo -e "${GREEN}Make clean..."
-    make clean > /dev/null
-    rm -rf include/generated/ include/config/
+
+    echo "Current directory is $PWD"
+
+    cd AnyKernel3/ 
+    zip -r9 "${ZIPNAME}" "${FILES[@]}"
+    mv "${ZIPNAME}" "${ROOT_DIR}/"
+    cd ${ROOT_DIR}/
+
+    echo -e "Kernel zip: $PWD/${ZIPNAME}${NC}"
     echo -e "Done${NC}"
 
-    sed -i "1s/.*/KERNELVERSION/" AnyKernel3/version
-else
-    echo -e "${RED}Build failed, reason should be above this message${NC}"
-fi
+    sed -i "1s/.*/KERNELVERSION/" ${ROOT_DIR}/AnyKernel3/version
+}
+
+main() {
+    echo "KSUN commit hash: ${CHASH}"
+    echo "Local version: ${LOCALVER}"
+    clean
+    defconfig
+    kernel
+    if [ -s "arch/arm64/boot/Image" ]; then
+        zip_kernel
+    else
+        echo -e "${RED}Build failed, reason should be above this message${NC}"
+    fi
+    clean
+    end_time=$(date +%s)
+    elapsed_time=$((end_time - start_time))
+    echo -e "Took $(printf '%02d minutes, %02d seconds' $((elapsed_time%3600/60)) $((elapsed_time%60)))"
+}
+
+main
