@@ -470,13 +470,13 @@ static int gpu_dvfs_update_asv_table(struct kbase_device *kbdev)
 						dvfs_table[j].down_staycount=3;
 						dvfs_table[j].cpu_little_min_freq=1794000;
 					}
-					if (dvfs_table[j].clock==676000){
-						dvfs_table[j].min_threshold =80;//90
-						dvfs_table[j].max_threshold =85;//95
-						dvfs_table[j].mem_freq =1794000;
-						dvfs_table[j].down_staycount=2;
-						dvfs_table[j].cpu_little_min_freq=1690000;
-					}
+					// if (dvfs_table[j].clock==676000){
+					// 	dvfs_table[j].min_threshold =80;//90
+					// 	dvfs_table[j].max_threshold =85;//95
+					// 	dvfs_table[j].mem_freq =1794000;
+					// 	dvfs_table[j].down_staycount=2;
+					// 	dvfs_table[j].cpu_little_min_freq=1690000;
+					// }
 					// if (dvfs_table[j].clock==545000){
 					// 	dvfs_table[j].min_threshold =78;//90
 					// 	dvfs_table[j].max_threshold =85;//95

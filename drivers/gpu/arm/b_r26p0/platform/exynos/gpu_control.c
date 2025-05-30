@@ -49,7 +49,7 @@ unsigned int gpu_pmu_status_local_pwr_mask;
 #define EXYNOS_PMU_G3D_STATUS	gpu_pmu_status_reg_offset
 #define LOCAL_PWR_CFG			gpu_pmu_status_local_pwr_mask
 
-unsigned int gpu_min_override = 676000;
+unsigned int gpu_min_override = 845000;
 unsigned int gpu_max_override = 1300000;
 
 #ifdef CONFIG_MALI_RT_PM
