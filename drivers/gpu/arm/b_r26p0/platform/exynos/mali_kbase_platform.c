@@ -281,7 +281,7 @@ static int gpu_dvfs_update_config_data_from_dt(struct kbase_device *kbdev)
 	platform->gpu_max_clock_limit = (int)cal_dfs_get_max_freq(platform->g3d_cmu_cal_id);
 	if (platform->gpu_max_clock_limit < 1300000||platform->gpu_max_clock < 1300000)
 	platform->gpu_max_clock=platform->gpu_max_clock_limit=1300000;
-        platform->interactive.highspeed_clock = 1001000;
+        platform->interactive.highspeed_clock = 1100000;
         platform->interactive.highspeed_load = 75;
 #else
 	gpu_update_config_data_int(np, "gpu_max_clock_limit", &platform->gpu_max_clock_limit);
@@ -463,13 +463,13 @@ static int gpu_dvfs_update_asv_table(struct kbase_device *kbdev)
 						dvfs_table[j].down_staycount=1;
 						dvfs_table[j].cpu_little_min_freq=1794000;
 					}
-					if (dvfs_table[j].clock==845000){//
-						dvfs_table[j].min_threshold =85;//90//
-						dvfs_table[j].max_threshold =90;//95
-						dvfs_table[j].mem_freq =1794000;
-						dvfs_table[j].down_staycount=3;
-						dvfs_table[j].cpu_little_min_freq=1794000;
-					}
+					// if (dvfs_table[j].clock==845000){//
+					// 	dvfs_table[j].min_threshold =85;//90//
+					// 	dvfs_table[j].max_threshold =90;//95
+					// 	dvfs_table[j].mem_freq =1794000;
+					// 	dvfs_table[j].down_staycount=3;
+					// 	dvfs_table[j].cpu_little_min_freq=1794000;
+					// }
 					// if (dvfs_table[j].clock==676000){
 					// 	dvfs_table[j].min_threshold =80;//90
 					// 	dvfs_table[j].max_threshold =85;//95

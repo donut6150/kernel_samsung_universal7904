@@ -30,7 +30,7 @@
  * Attached value: number in kHz
  * Default value: NA
  */
-#define GPU_FREQ_KHZ_MIN (845000)
+#define GPU_FREQ_KHZ_MIN (1001000)
 
 /**
  * CPU_SPEED_FUNC - A pointer to a function that calculates the CPU clock
