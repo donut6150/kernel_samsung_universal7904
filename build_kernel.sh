@@ -18,7 +18,7 @@ cd KernelSU-Next/
 CHASH=$(git show next --format=%h -s)
 cd ..
 
-LOCALVER="-KSUN@${CHASH}"
+LOCALVER="-$(cat .version)-KSUN@${CHASH}"
 
 clean() {
     cd ${ROOT_DIR}/
