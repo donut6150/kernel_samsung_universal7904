@@ -1,12 +1,14 @@
 VERSION = 4
 PATCHLEVEL = 4
 SUBLEVEL = 178
-EXTRAVERSION =
+EXTRAVERSION = -v15.2
 NAME = Blurry Fish Butt
 
 export ANDROID_MAJOR_VERSION=r
 export PLATFORM_VERSION=11
 export ARCH=arm64
+export KBUILD_BUILD_USER=Pencil
+export KBUILD_BUILD_HOST=Sharpener
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
 # More info can be located in ./README
