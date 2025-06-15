@@ -1,7 +1,5 @@
 #!/bin/bash
 
-start_time=$(date +%s)
-
 set -euo pipefail
 [[ -n "${3:-}" ]] && set "-$3"
 trap "echo KeyboardInterrupt!; exit 1" INT
@@ -15,10 +13,10 @@ DTB_YN=$([[ "$DTB" == "dtb" ]] && echo " with DTB" || echo " without DTB")
 ROOT_DIR=$(pwd)
 
 cd KernelSU-Next/
-CHASH=$(git show next --format=%h -s)
+COMMIT_TAG=$(git describe --tags)
 cd ..
 
-LOCALVER="-$(cat .version)-KSUN@${CHASH}"
+LOCALVER="-KSUN-${COMMIT_TAG}"
 
 clean() {
     cd ${ROOT_DIR}/
@@ -81,18 +79,19 @@ zip_kernel() {
 }
 
 main() {
-    echo "KSUN commit hash: ${CHASH}"
+    echo "KernelSU-Next version: ${COMMIT_TAG}"
     echo "Local version: ${LOCALVER}"
+    start_time=$(date +%s)
     clean
     defconfig
     kernel
+    end_time=$(date +%s)
     if [ -s "arch/arm64/boot/Image" ]; then
         zip_kernel
     else
         echo -e "${RED}Build failed, reason should be above this message${NC}"
     fi
     clean
-    end_time=$(date +%s)
     elapsed_time=$((end_time - start_time))
     echo -e "Took $(printf '%02d minutes, %02d seconds' $((elapsed_time%3600/60)) $((elapsed_time%60)))"
 }
