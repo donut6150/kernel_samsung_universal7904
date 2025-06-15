@@ -412,6 +412,9 @@ static DEFINE_RAW_SPINLOCK(die_lock);
 void die(const char *str, struct pt_regs *regs, int err)
 {
 	int ret;
+#ifdef CONFIG_SEC_DEBUG
+	char buf[SZ_256];
+#endif
 	unsigned long flags;
 
 	raw_spin_lock_irqsave(&die_lock, flags);
@@ -453,7 +456,7 @@ void die(const char *str, struct pt_regs *regs, int err)
 		panic("Fatal exception in interrupt");
 	if (panic_on_oops)
 		panic("Fatal exception");
-
+#endif
 	raw_spin_unlock_irqrestore(&die_lock, flags);
 
 	if (ret != NOTIFY_STOP)
