@@ -5531,17 +5531,6 @@ static void print_binder_transaction_ilocked(struct seq_file *m,
 		   t->buffer->data);
 }
 
-	if (buffer == NULL) {
-		seq_puts(m, " buffer free\n");
-		return;
-	}
-	if (buffer->target_node)
-		seq_printf(m, " node %d", buffer->target_node->debug_id);
-	seq_printf(m, " size %zd:%zd data %pK\n",
-		   buffer->data_size, buffer->offsets_size,
-		   buffer->data);
-}
-
 static void print_binder_work_ilocked(struct seq_file *m,
 				     struct binder_proc *proc,
 				     const char *prefix,
