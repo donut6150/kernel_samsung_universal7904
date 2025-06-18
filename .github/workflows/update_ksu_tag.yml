@@ -1,4 +1,4 @@
-name: Check KernelSU tag update
+name: Check KernelSU-Next tag update
 
 on:
   schedule:
