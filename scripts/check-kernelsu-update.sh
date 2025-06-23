@@ -5,7 +5,7 @@ git config --local user.name "github-actions[bot]"
 git submodule update --init
 pushd KernelSU-Next
 LOCAL_LATEST=$(git describe --tags --abbrev=0)
-git pull origin master
+git pull origin next
 REMOTE_LATEST=$(git describe --tags --abbrev=0)
 if [ $LOCAL_LATEST = $REMOTE_LATEST ]; then
 echo "No changes: $LOCAL_LATEST is latest"
