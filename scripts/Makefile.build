@@ -355,7 +355,7 @@ else
 # versioning matches the C process described above, with difference that
 # we parse asm-prototypes.h C header to get function definitions.
 
-cmd_as_o_S = $(CC) $(a_flags) -c -o $(@D)/.tmp_$(@F) $<
+cmd_as_o_S = $(AS) $(a_flags) -c -o $(@D)/.tmp_$(@F) $<
 
 cmd_modversions_S =								\
 	if $(OBJDUMP) -h $(@D)/.tmp_$(@F) | grep -q __ksymtab; then		\
