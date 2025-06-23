@@ -2,7 +2,7 @@ name: Check KernelSU-Next tag update
 
 on:
   schedule:
-    - cron: '0 12 15,30 * *'
+    - cron: '0 12 * * 1'
   workflow_dispatch:
 
 jobs:
