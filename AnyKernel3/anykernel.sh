@@ -46,15 +46,6 @@ flash_boot;
 ui_print "+ Installation finished successfully!";
 ui_print " ";
 
-ui_print "+ Copying tweaks.zip to internal storage..."
-ui_print " ";
-
-cp /tmp/anykernel/tools/tweaks.zip /data/media/0/Kernel_Tweaks.zip;
-chmod 755 /data/media/0/Kernel_Tweaks.zip;
-
-ui_print "+ Flash Kernel_Tweaks.zip found on your internal storage in Magisk for maximum performance."
-ui_print " ";
-
 ui_print "+ Thank you for using ultrasonic kernel, enjoy!";
 ui_print " ";
 ## end boot install
