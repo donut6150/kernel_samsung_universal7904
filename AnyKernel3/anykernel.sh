@@ -39,14 +39,14 @@ PATCH_VBMETA_FLAG=auto;
 
 # boot install
 split_boot;
-ui_print "+ Installing ultrasonic kernel";
+ui_print "+ Installing kernel";
 ui_print " ";
 flash_boot;
 
 ui_print "+ Installation finished successfully!";
 ui_print " ";
 
-ui_print "+ Thank you for using ultrasonic kernel, enjoy!";
+ui_print "+ Enjoy!";
 ui_print " ";
 ## end boot install
 
