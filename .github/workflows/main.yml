@@ -23,7 +23,7 @@ jobs:
           python-is-python3 ca-certificates unzip ccache
 
     - name: Checkout repo
-      uses: actions/checkout@v3.5.3
+      uses: actions/checkout@v6.0.2
       with:
         fetch-depth: 0
         submodules: recursive
@@ -112,7 +112,7 @@ jobs:
         git checkout "$TAG_NAME"
 
     - name: Upload
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2.6.1
       with:
         tag_name: "v${{ env.kernel_version }}"
         files: "${{ env.ZIP_NAME }}.zip"
