@@ -762,7 +762,6 @@ static int sock_set_dns_pid(struct sock *sk, char __user *optval, int optlen)
 out:
 	return ret;
 }
-#endif
 /* END_OF_KNOX_NPA */
 #endif
 
@@ -1637,7 +1636,6 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
 				}
 			}
 		}
-#endif
 		/* END_OF_KNOX_NPA */
 #endif
 		/*
