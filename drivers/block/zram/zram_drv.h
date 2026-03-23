@@ -57,13 +57,17 @@ static const size_t max_zpage_size = PAGE_SIZE / 4 * 3;
  */
 #define ZRAM_FLAG_SHIFT 24
 
-/* Flags for zram pages (table[page_no].value) */
+/* Flags for zram pages (table[page_no].flags) */
 enum zram_pageflags {
 	/* zram slot is locked */
 	ZRAM_LOCK = ZRAM_FLAG_SHIFT,
 	ZRAM_SAME,	/* Page consists the same element */
 	ZRAM_WB,	/* page is stored on backing_device */
+	ZRAM_UNDER_WB,	/* page is under writeback */
 	ZRAM_HUGE,	/* Incompressible page */
+	ZRAM_IDLE,	/* not accessed page since last idle marking */
+	ZRAM_EXPIRE,
+	ZRAM_READ_BDEV,
 
 	__NR_ZRAM_PAGEFLAGS,
 };
