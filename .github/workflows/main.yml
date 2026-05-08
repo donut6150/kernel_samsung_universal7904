@@ -109,7 +109,7 @@ jobs:
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
           git push origin "$TAG_NAME"
         fi
-        git checkout "$TAG_NAME"
+        git checkout --force "$TAG_NAME"
 
     - name: Upload
       uses: softprops/action-gh-release@v2.6.1
